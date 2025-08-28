@@ -1,0 +1,98 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Claude Code and development tools
+.claude/
+.github/
+
+# Dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+yarn.lock
+package-lock.json
+
+# Testing
+/coverage
+/test-results
+*.spec.ts.tmp
+playwright-report/
+test-results/
+
+# Next.js
+/.next/
+/out/
+.next/
+out/
+
+# Production builds
+/build
+/dist
+*.tsbuildinfo
+
+# Development and debugging
+*.log
+logs/
+debug-*.json
+build-report-*.json
+error-debug-*.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment files (all variants)
+.env
+.env.*
+!.env.example
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+*.pem
+
+# Deployment platforms
+.vercel/
+.vercel
+.netlify/
+.firebase/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Documentation 
+!*.md
+!**/*.md
+
+# Development tools and configs
+*.py
+test-*.js
+playwright.config.ts
+vercel-log-drain.json
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+temp/
+tmp/

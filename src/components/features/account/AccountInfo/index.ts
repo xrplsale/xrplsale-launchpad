@@ -1,0 +1,1 @@
+export { default as AccountInfoDashboard } from './AccountInfo';
