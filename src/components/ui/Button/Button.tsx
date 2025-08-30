@@ -55,6 +55,8 @@ export interface ButtonProps
   iconPosition?: 'left' | 'right';
   ripple?: boolean;
   glow?: boolean;
+  magnetic?: boolean;
+  depth3D?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -70,11 +72,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     disabled,
     ripple = true,
     glow = false,
+    magnetic = false,
+    depth3D = false,
     pulse,
     onClick,
     ...props 
   }, ref) => {
     const [ripples, setRipples] = useState<RippleProps[]>([]);
+    const [magneticTransform, setMagneticTransform] = useState({ x: 0, y: 0 });
     const buttonRef = useRef<HTMLButtonElement>(null);
     
     // Combine refs
@@ -87,6 +92,29 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       
       return () => clearTimeout(timer);
     }, [ripples]);
+
+    // Magnetic hover effect
+    const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (!magnetic || disabled || loading) return;
+      
+      const button = buttonRef.current;
+      if (button) {
+        const rect = button.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        
+        const deltaX = (e.clientX - centerX) * 0.2;
+        const deltaY = (e.clientY - centerY) * 0.2;
+        
+        setMagneticTransform({ x: deltaX, y: deltaY });
+      }
+    };
+
+    const handleMouseLeave = () => {
+      if (magnetic) {
+        setMagneticTransform({ x: 0, y: 0 });
+      }
+    };
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       if (ripple && !disabled && !loading) {
@@ -140,10 +168,20 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(
           buttonVariants({ variant, size, fullWidth, pulse, className }),
           glow && variant === 'primary' && 'shadow-lg shadow-purple-500/50 hover:shadow-purple-500/75',
-          loading && 'cursor-wait'
+          loading && 'cursor-wait',
+          magnetic && 'cursor-magnetic transition-transform duration-200 ease-out',
+          depth3D && 'btn-3d transform-gpu perspective-1000'
         )}
         disabled={disabled || loading}
         onClick={handleClick}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          transform: magnetic 
+            ? `translate(${magneticTransform.x}px, ${magneticTransform.y}px)` 
+            : undefined,
+          ...props.style
+        }}
         {...props}
       >
         {/* Ripple Effect Container */}
@@ -203,11 +241,32 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           )}
         </span>
 
-        {/* Glow effect background */}
+        {/* 3D Depth Effect */}
+        {depth3D && (
+          <span 
+            className="absolute inset-0 -z-10 rounded-lg transition-all duration-300 ease-out"
+            style={{
+              background: 'inherit',
+              transform: 'translateZ(-4px) translateY(2px)',
+              filter: 'brightness(0.8)',
+              opacity: 0.6
+            }}
+          />
+        )}
+
+        {/* Enhanced Glow effect background */}
         {glow && (
-          <span className="absolute inset-0 -z-10 animate-pulse-slow">
-            <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 blur-lg opacity-50" />
-          </span>
+          <>
+            <span className="absolute inset-0 -z-10 animate-pulse-slow">
+              <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 blur-lg opacity-50" />
+            </span>
+            {/* Magnetic glow enhancement */}
+            {magnetic && (
+              <span className="absolute inset-0 -z-20 animate-pulse-ring">
+                <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-400/20 to-pink-400/20 blur-xl" />
+              </span>
+            )}
+          </>
         )}
       </button>
     );
@@ -261,6 +320,42 @@ if (typeof window !== 'undefined') {
     .animate-pulse-slow {
       animation: pulse-slow 2s ease-in-out infinite;
     }
+
+    @keyframes pulse-ring {
+      0% {
+        transform: scale(0.9);
+        opacity: 0.8;
+      }
+      100% {
+        transform: scale(1.3);
+        opacity: 0;
+      }
+    }
+    
+    .animate-pulse-ring {
+      animation: pulse-ring 2s ease-out infinite;
+    }
+
+    .btn-3d {
+      transform-style: preserve-3d;
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-2px) scale(1.02);
+    }
+
+    .btn-3d:active {
+      transform: translateY(0) scale(0.98);
+      transition-duration: 0.1s;
+    }
+
+    .cursor-magnetic {
+      cursor: pointer;
+    }
+
+    .perspective-1000 {
+      perspective: 1000px;
+    }
   `;
   
   if (!document.querySelector('#button-animations')) {
@@ -269,4 +364,14 @@ if (typeof window !== 'undefined') {
   }
 }
 
-export { Button, buttonVariants };
+// Enhanced Button variants with new props
+const EnhancedButton = React.forwardRef<HTMLButtonElement, ButtonProps & {
+  'data-magnetic'?: boolean;
+  'data-3d'?: boolean;
+}>((props, ref) => {
+  return <Button ref={ref} {...props} />;
+});
+
+EnhancedButton.displayName = 'EnhancedButton';
+
+export { Button, EnhancedButton, buttonVariants };

@@ -1,0 +1,44 @@
+'use client';
+
+import React, { useEffect, useRef, useState } from 'react';
+
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  size: number;
+  opacity: number;
+  color: string;
+  life: number;
+  maxLife: number;
+}
+
+interface ParticleSystemProps {
+  particleCount?: number;
+  colors?: string[];
+  size?: [number, number]; // min, max size
+  speed?: [number, number]; // min, max speed
+  life?: [number, number]; // min, max life in seconds
+  className?: string;
+  interactive?: boolean;
+  direction?: 'up' | 'down' | 'random';
+}
+
+export function ParticleSystem({
+  particleCount = 50,
+  colors = ['#8b5cf6', '#06b6d4', '#10b981', '#f472b6'],
+  size = [1, 3],
+  speed = [0.2, 0.8],
+  life = [3, 8],
+  className = '',
+  interactive = false,
+  direction = 'up'
+}: ParticleSystemProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationFrameRef = useRef<number>();
+  const particlesRef = useRef<Particle[]>([]);
+  const [isVisible, setIsVisible] = useState(true);
+
+  // Initialize particles\n  const createParticle = (x?: number, y?: number): Particle => {\n    const canvas = canvasRef.current;\n    if (!canvas) return {} as Particle;\n\n    const randomSize = size[0] + Math.random() * (size[1] - size[0]);\n    const randomSpeed = speed[0] + Math.random() * (speed[1] - speed[0]);\n    const randomLife = life[0] + Math.random() * (life[1] - life[0]);\n    \n    let vx = 0;\n    let vy = 0;\n    \n    switch (direction) {\n      case 'up':\n        vx = (Math.random() - 0.5) * randomSpeed * 0.5;\n        vy = -randomSpeed;\n        break;\n      case 'down':\n        vx = (Math.random() - 0.5) * randomSpeed * 0.5;\n        vy = randomSpeed;\n        break;\n      case 'random':\n        vx = (Math.random() - 0.5) * randomSpeed;\n        vy = (Math.random() - 0.5) * randomSpeed;\n        break;\n    }\n\n    return {\n      id: Math.random(),\n      x: x ?? Math.random() * canvas.width,\n      y: y ?? Math.random() * canvas.height,\n      vx,\n      vy,\n      size: randomSize,\n      opacity: 0.8,\n      color: colors[Math.floor(Math.random() * colors.length)],\n      life: randomLife * 60, // Convert to frames (assuming 60fps)\n      maxLife: randomLife * 60\n    };\n  };\n\n  // Update particle\n  const updateParticle = (particle: Particle, canvas: HTMLCanvasElement): Particle => {\n    const newParticle = {\n      ...particle,\n      x: particle.x + particle.vx,\n      y: particle.y + particle.vy,\n      life: particle.life - 1,\n      opacity: (particle.life / particle.maxLife) * 0.8\n    };\n\n    // Wrap around screen edges\n    if (newParticle.x < 0) newParticle.x = canvas.width;\n    if (newParticle.x > canvas.width) newParticle.x = 0;\n    if (newParticle.y < 0) newParticle.y = canvas.height;\n    if (newParticle.y > canvas.height) newParticle.y = 0;\n\n    return newParticle;\n  };\n\n  // Render particle\n  const renderParticle = (ctx: CanvasRenderingContext2D, particle: Particle) => {\n    ctx.save();\n    ctx.globalAlpha = particle.opacity;\n    \n    // Create gradient for particle\n    const gradient = ctx.createRadialGradient(\n      particle.x, particle.y, 0,\n      particle.x, particle.y, particle.size * 2\n    );\n    gradient.addColorStop(0, particle.color);\n    gradient.addColorStop(1, 'transparent');\n    \n    ctx.fillStyle = gradient;\n    ctx.beginPath();\n    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);\n    ctx.fill();\n    \n    // Add glow effect\n    ctx.shadowBlur = particle.size * 2;\n    ctx.shadowColor = particle.color;\n    ctx.fill();\n    \n    ctx.restore();\n  };\n\n  // Animation loop\n  const animate = () => {\n    const canvas = canvasRef.current;\n    const ctx = canvas?.getContext('2d');\n    if (!canvas || !ctx) return;\n\n    // Clear canvas\n    ctx.clearRect(0, 0, canvas.width, canvas.height);\n\n    // Update and render particles\n    particlesRef.current = particlesRef.current\n      .map(particle => updateParticle(particle, canvas))\n      .filter(particle => particle.life > 0);\n\n    // Add new particles if needed\n    while (particlesRef.current.length < particleCount) {\n      particlesRef.current.push(createParticle());\n    }\n\n    // Render all particles\n    particlesRef.current.forEach(particle => {\n      renderParticle(ctx, particle);\n    });\n\n    animationFrameRef.current = requestAnimationFrame(animate);\n  };\n\n  // Handle mouse interaction\n  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {\n    if (!interactive) return;\n    \n    const canvas = canvasRef.current;\n    if (!canvas) return;\n    \n    const rect = canvas.getBoundingClientRect();\n    const x = e.clientX - rect.left;\n    const y = e.clientY - rect.top;\n    \n    // Create particles at cursor position\n    for (let i = 0; i < 3; i++) {\n      particlesRef.current.push(createParticle(x + (Math.random() - 0.5) * 20, y + (Math.random() - 0.5) * 20));\n    }\n  };\n\n  // Resize canvas\n  const resizeCanvas = () => {\n    const canvas = canvasRef.current;\n    if (!canvas) return;\n    \n    const parent = canvas.parentElement;\n    if (!parent) return;\n    \n    canvas.width = parent.clientWidth;\n    canvas.height = parent.clientHeight;\n  };\n\n  // Initialize\n  useEffect(() => {\n    resizeCanvas();\n    \n    // Initialize particles\n    particlesRef.current = [];\n    for (let i = 0; i < particleCount; i++) {\n      particlesRef.current.push(createParticle());\n    }\n    \n    // Start animation\n    animate();\n    \n    // Handle resize\n    window.addEventListener('resize', resizeCanvas);\n    \n    return () => {\n      if (animationFrameRef.current) {\n        cancelAnimationFrame(animationFrameRef.current);\n      }\n      window.removeEventListener('resize', resizeCanvas);\n    };\n  }, [particleCount, colors, size, speed, life, direction]);\n\n  // Pause/resume on visibility change\n  useEffect(() => {\n    const handleVisibilityChange = () => {\n      if (document.hidden) {\n        if (animationFrameRef.current) {\n          cancelAnimationFrame(animationFrameRef.current);\n        }\n        setIsVisible(false);\n      } else {\n        setIsVisible(true);\n        animate();\n      }\n    };\n\n    document.addEventListener('visibilitychange', handleVisibilityChange);\n    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);\n  }, []);\n\n  return (\n    <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}>\n      <canvas\n        ref={canvasRef}\n        className={`absolute inset-0 w-full h-full ${\n          interactive ? 'pointer-events-auto' : 'pointer-events-none'\n        }`}\n        onMouseMove={interactive ? handleMouseMove : undefined}\n        style={{\n          mixBlendMode: 'screen',\n          opacity: isVisible ? 1 : 0.3\n        }}\n      />\n    </div>\n  );\n}\n\n// Preset particle configurations\nexport const ParticlePresets = {\n  stars: {\n    particleCount: 100,\n    colors: ['#ffffff', '#f8fafc', '#e2e8f0'],\n    size: [0.5, 2] as [number, number],\n    speed: [0.1, 0.3] as [number, number],\n    life: [10, 20] as [number, number],\n    direction: 'random' as const\n  },\n  aurora: {\n    particleCount: 30,\n    colors: ['#8b5cf6', '#06b6d4', '#10b981'],\n    size: [2, 8] as [number, number],\n    speed: [0.2, 0.6] as [number, number],\n    life: [8, 15] as [number, number],\n    direction: 'up' as const\n  },\n  cosmic: {\n    particleCount: 60,\n    colors: ['#ff007a', '#f472b6', '#8b5cf6', '#06b6d4'],\n    size: [1, 4] as [number, number],\n    speed: [0.3, 0.8] as [number, number],\n    life: [5, 12] as [number, number],\n    direction: 'random' as const\n  },\n  gentle: {\n    particleCount: 25,\n    colors: ['#e2e8f0', '#cbd5e1', '#94a3b8'],\n    size: [1, 3] as [number, number],\n    speed: [0.1, 0.4] as [number, number],\n    life: [15, 25] as [number, number],\n    direction: 'up' as const\n  }\n};\n\n// Convenience components for common use cases\nexport const StarField = (props: Omit<ParticleSystemProps, 'particleCount' | 'colors' | 'size' | 'speed' | 'life' | 'direction'>) => (\n  <ParticleSystem {...ParticlePresets.stars} {...props} />\n);\n\nexport const AuroraParticles = (props: Omit<ParticleSystemProps, 'particleCount' | 'colors' | 'size' | 'speed' | 'life' | 'direction'>) => (\n  <ParticleSystem {...ParticlePresets.aurora} {...props} />\n);\n\nexport const CosmicDust = (props: Omit<ParticleSystemProps, 'particleCount' | 'colors' | 'size' | 'speed' | 'life' | 'direction'>) => (\n  <ParticleSystem {...ParticlePresets.cosmic} {...props} />\n);\n\nexport const GentleFloaters = (props: Omit<ParticleSystemProps, 'particleCount' | 'colors' | 'size' | 'speed' | 'life' | 'direction'>) => (\n  <ParticleSystem {...ParticlePresets.gentle} {...props} />\n);

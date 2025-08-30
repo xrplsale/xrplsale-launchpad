@@ -3,17 +3,23 @@
 import { Suspense, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import PresaleInfo from '@/components/PresaleInfo';
+import { ScrollReveal, StaggeredReveal, ParallaxScroll, CounterAnimation } from '@/components/shared/ScrollReveal';
+import { StarField, CosmicDust } from '@/components/shared/ParticleSystem';
+import { CursorEffects, MagneticElement } from '@/components/shared/CursorEffects';
+import { EnhancedButton } from '@/components/ui/Button/Button';
 import type { LandingContent, PresaleStatus } from '@/lib/api-simple';
 
 // Popular search button component
 function SearchButton({ term }: { term: string }) {
   return (
-    <button 
-      className="btn-ghost text-sm whitespace-nowrap"
-      onClick={() => console.log(`Search for: ${term}`)}
-    >
-      {term}
-    </button>
+    <MagneticElement strength={0.2}>
+      <button 
+        className="btn-ghost text-sm whitespace-nowrap cursor-magnetic"
+        onClick={() => console.log(`Search for: ${term}`)}
+      >
+        {term}
+      </button>
+    </MagneticElement>
   );
 }
 
@@ -98,10 +104,15 @@ function PresaleCard({ presale }: { presale: any }) {
           <div className="text-xs text-brand-accent/70 mt-1">Limited Time Offer</div>
         </div>
 
-        <Link 
-          href={presale.project_url || '/projects/0'}
-          className="btn-primary block text-center w-full group/btn"
-          role="button"
+        <EnhancedButton
+          variant="primary"
+          size="lg"
+          fullWidth
+          magnetic
+          depth3D
+          glow
+          className="group/btn text-center"
+          onClick={() => window.location.href = presale.project_url || '/projects/0'}
           aria-label="Purchase XSALE tokens in the presale"
         >
           <span className="flex items-center justify-center gap-2">
@@ -110,7 +121,7 @@ function PresaleCard({ presale }: { presale: any }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
           </span>
-        </Link>
+        </EnhancedButton>
       </div>
     </div>
   );
@@ -151,26 +162,32 @@ function StatsSection({ stats }: { stats: any }) {
 
   return (
     <section className="section-y-sm">
-      <div className="animate-stagger grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <StaggeredReveal
+        staggerDelay={150}
+        className="grid grid-cols-2 lg:grid-cols-4 gap-6"
+      >
         {statsData.map((stat, index) => (
-          <div 
-            key={index} 
-            className="glass-card rounded-xl p-6 text-center hover-lift group border-slate-700/30"
-          >
-            <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg ${stat.bg} mb-4 group-hover:scale-110 transition-transform`}>
-              <span className="text-2xl" role="img" aria-hidden="true">
-                {stat.icon}
-              </span>
+          <MagneticElement key={index} strength={0.15} scale={1.03}>
+            <div className="glass-card rounded-xl p-6 text-center group border-slate-700/30 card-tilt">
+              <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg ${stat.bg} mb-4 group-hover:scale-110 transition-transform float-gentle`}>
+                <span className="text-2xl" role="img" aria-hidden="true">
+                  {stat.icon}
+                </span>
+              </div>
+              <div className={`text-3xl font-bold ${stat.color} mb-2 tabular-nums`}>
+                {typeof stat.value === 'number' ? (
+                  <CounterAnimation to={stat.value} duration={2000} delay={index * 200} />
+                ) : (
+                  stat.value
+                )}
+              </div>
+              <div className="text-sm font-medium text-slate-300">
+                {stat.label}
+              </div>
             </div>
-            <div className={`text-3xl font-bold ${stat.color} mb-2 tabular-nums`}>
-              {stat.value}
-            </div>
-            <div className="text-sm font-medium text-slate-300">
-              {stat.label}
-            </div>
-          </div>
+          </MagneticElement>
         ))}
-      </div>
+      </StaggeredReveal>
     </section>
   );
 }
@@ -183,14 +200,19 @@ function FAQSection({ faq }: { faq: Array<{ q: string; a: string }> }) {
         <h2 className="text-3xl font-bold text-center mb-12 text-gradient-brand">
           Frequently Asked Questions
         </h2>
-        <div className="animate-stagger grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <StaggeredReveal
+          staggerDelay={150}
+          className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto"
+        >
           {faq.map((item, index) => (
-            <div key={index} className="glass-card rounded-lg p-6 border-slate-700/50">
-              <h3 className="text-lg font-semibold text-white mb-3">{item.q}</h3>
-              <p className="text-slate-300 text-sm leading-relaxed">{item.a}</p>
-            </div>
+            <MagneticElement key={index} strength={0.08}>
+              <div className="glass-card rounded-lg p-6 border-slate-700/50 card-tilt">
+                <h3 className="text-lg font-semibold text-white mb-3">{item.q}</h3>
+                <p className="text-slate-300 text-sm leading-relaxed">{item.a}</p>
+              </div>
+            </MagneticElement>
           ))}
-        </div>
+        </StaggeredReveal>
       </div>
     </div>
   );
@@ -251,7 +273,18 @@ export function FlaskHomepageClient({
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-slate-900 text-white relative">
+      {/* Premium Cursor Effects */}
+      <CursorEffects
+        showTrail
+        showGlow
+        showRipples
+        color="#8b5cf6"
+      />
+      
+      {/* Ambient Particle Effects */}
+      <StarField className="fixed inset-0 z-0" />
+      
       {/* Accessibility: Skip to content link */}
       <a 
         href="#main-content" 
@@ -260,17 +293,19 @@ export function FlaskHomepageClient({
       >
         Skip to main content
       </a>
+      
       {/* Enhanced Hero Section */}
-      <section 
-        ref={heroRef}
-        className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 opacity-0 translate-y-8 transition-all duration-1000 ease-out"
-      >
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        {/* Cosmic Dust Overlay */}
+        <CosmicDust className="absolute inset-0 opacity-30" />
+        
         {/* Unified brand gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/10 via-transparent to-brand-accent/5" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_70%,_rgba(255,0,122,0.08),_transparent_50%)] bg-[radial-gradient(circle_at_70%_30%,_rgba(244,114,182,0.06),_transparent_50%)]" />
         
-        <div className="relative container-main section-y">
-          <div className="text-center max-w-5xl mx-auto">
+        <ParallaxScroll speed={0.3} className="relative container-main section-y">
+          <ScrollReveal direction="up" delay={200}>
+            <div className="text-center max-w-5xl mx-auto">
             <div className="mb-6">
               <div className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-primary/10 to-brand-accent/10 border border-brand-primary/20 rounded-full px-4 py-2 mb-8">
                 <div className="w-2 h-2 bg-brand-primary rounded-full animate-pulse" />
@@ -325,47 +360,59 @@ export function FlaskHomepageClient({
             {/* Enhanced CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
               {content.hero.primaryCta && (
-                <Link
-                  href={content.hero.primaryCta.href}
-                  className="btn-primary text-lg px-8"
-                >
-                  <span className="flex items-center gap-2">
-                    {content.hero.primaryCta.label}
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </span>
-                </Link>
+                <MagneticElement strength={0.3} scale={1.05}>
+                  <EnhancedButton
+                    variant="primary"
+                    size="xl"
+                    magnetic
+                    depth3D
+                    glow
+                    onClick={() => window.location.href = content.hero.primaryCta!.href}
+                    className="text-lg px-8"
+                  >
+                    <span className="flex items-center gap-2">
+                      {content.hero.primaryCta.label}
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </span>
+                  </EnhancedButton>
+                </MagneticElement>
               )}
               {content.hero.secondaryCta && (
-                <Link
-                  href={content.hero.secondaryCta.href}
-                  className="btn-secondary text-lg px-8"
-                >
-                  {content.hero.secondaryCta.label}
-                </Link>
+                <MagneticElement strength={0.2}>
+                  <EnhancedButton
+                    variant="secondary"
+                    size="xl"
+                    magnetic
+                    onClick={() => window.location.href = content.hero.secondaryCta!.href}
+                    className="text-lg px-8"
+                  >
+                    {content.hero.secondaryCta.label}
+                  </EnhancedButton>
+                </MagneticElement>
               )}
             </div>
-          </div>
-        </div>
+            </div>
+          </ScrollReveal>
+        </ParallaxScroll>
       </section>
 
       <main id="main-content" className="container-main">
         {/* Stats */}
         {content.stats && (
-          <div 
-            ref={statsRef}
-            className="opacity-0 translate-y-8 transition-all duration-1000 ease-out"
-          >
+          <ScrollReveal direction="up" delay={300}>
             <StatsSection stats={content.stats} />
-          </div>
+          </ScrollReveal>
         )}
 
         {/* Enhanced XSALE Presale Section */}
-        <section 
-          ref={presaleRef}
-          className="section-y bg-gradient-to-br from-slate-800/20 via-brand-primary/5 to-slate-800/20 rounded-3xl border border-brand-primary/20 opacity-0 translate-y-8 transition-all duration-1000 ease-out"
-        >
+        <ScrollReveal direction="up" delay={400}>
+          <section className="section-y bg-gradient-to-br from-slate-800/20 via-brand-primary/5 to-slate-800/20 rounded-3xl border border-brand-primary/20 relative overflow-hidden">
+            {/* Gentle floating particles for presale section */}
+            <div className="absolute inset-0 opacity-20">
+              <CosmicDust particleCount={15} />
+            </div>
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-brand-primary/10 border border-brand-primary/30 rounded-full px-6 py-3 mb-6">
               <div className="w-2 h-2 bg-brand-primary rounded-full animate-pulse" />
@@ -410,13 +457,12 @@ export function FlaskHomepageClient({
               </div>
             )}
           </div>
-        </section>
+          </section>
+        </ScrollReveal>
 
         {/* Enhanced Features Section */}
-        <section 
-          ref={featuresRef}
-          className="section-y opacity-0 translate-y-8 transition-all duration-1000 ease-out"
-        >
+        <ScrollReveal direction="up" delay={500}>
+          <section className="section-y">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-brand-primary/10 border border-brand-primary/30 rounded-full px-4 py-2 mb-6">
               <span className="text-brand-accent text-sm font-medium">Platform Features</span>
@@ -430,46 +476,54 @@ export function FlaskHomepageClient({
           </div>
           
           {content.features && (
-            <div className="animate-stagger grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            <StaggeredReveal
+              staggerDelay={200}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto"
+            >
               {content.features.map((feature, i) => (
-                <div 
-                  key={i} 
-                  className="glass-card p-8 rounded-2xl border-slate-700/30 hover-lift group relative overflow-hidden"
-                  role="article"
-                  aria-labelledby={`feature-${i}-title`}
-                >
-                  {/* Subtle gradient overlay on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  
-                  <div className="relative z-10">
-                    <div className="flex items-center mb-6">
-                      <div className="w-14 h-14 bg-gradient-to-br from-slate-700/50 to-slate-800/50 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                        <span className="text-3xl" role="img" aria-hidden="true">
-                          {feature.icon}
-                        </span>
-                      </div>
-                      <div className="w-2 h-2 bg-brand-primary rounded-full animate-pulse-gentle" />
-                    </div>
+                <MagneticElement key={i} strength={0.1} scale={1.02}>
+                  <div 
+                    className="glass-card p-8 rounded-2xl border-slate-700/30 group relative overflow-hidden card-tilt"
+                    role="article"
+                    aria-labelledby={`feature-${i}-title`}
+                  >
+                    {/* Subtle gradient overlay on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     
-                    <h3 
-                      id={`feature-${i}-title`}
-                      className="text-xl font-semibold mb-4 text-white group-hover:text-gradient-brand transition-all"
-                    >
-                      {feature.title}
-                    </h3>
-                    <p className="text-slate-300 leading-relaxed text-body-enhanced">
-                      {feature.description}
-                    </p>
+                    <div className="relative z-10">
+                      <div className="flex items-center mb-6">
+                        <div className="w-14 h-14 bg-gradient-to-br from-slate-700/50 to-slate-800/50 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform float-gentle">
+                          <span className="text-3xl" role="img" aria-hidden="true">
+                            {feature.icon}
+                          </span>
+                        </div>
+                        <div className="w-2 h-2 bg-brand-primary rounded-full animate-pulse-gentle" />
+                      </div>
+                      
+                      <h3 
+                        id={`feature-${i}-title`}
+                        className="text-xl font-semibold mb-4 text-white group-hover:text-gradient-brand transition-all"
+                      >
+                        {feature.title}
+                      </h3>
+                      <p className="text-slate-300 leading-relaxed text-body-enhanced">
+                        {feature.description}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                </MagneticElement>
               ))}
-            </div>
+            </StaggeredReveal>
           )}
-        </section>
+        </ScrollReveal>
       </main>
 
       {/* FAQ Section */}
-      {content.faq && content.faq.length > 0 && <FAQSection faq={content.faq} />}
+      {content.faq && content.faq.length > 0 && (
+        <ScrollReveal direction="up" delay={300}>
+          <FAQSection faq={content.faq} />
+        </ScrollReveal>
+      )}
 
       {/* Footer */}
       <footer className="bg-slate-900 border-t border-slate-700 py-12">

@@ -88,27 +88,61 @@ export function Navigation({ variant = 'default' }: NavigationProps) {
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
-            <div className="flex items-center space-x-1">
-              {navItems.map((item) => {
+            <div className="flex items-center space-x-1 relative">
+              {/* Active indicator background */}
+              <div 
+                className="absolute h-10 bg-gradient-to-r from-purple-400/20 to-cyan-400/20 rounded-lg transition-all duration-500 ease-out backdrop-blur-sm border border-purple-400/30"
+                style={{
+                  width: '0px',
+                  left: '0px',
+                  opacity: 0,
+                  transform: 'translateX(0px)'
+                }}
+                id="nav-indicator"
+              />
+              {navItems.map((item, index) => {
                 const active = isActive(item.href);
                 return (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    data-nav-index={index}
+                    className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 nav-item group z-10 ${
                       active
-                        ? 'text-purple-400 bg-purple-400/15 shadow-md'
+                        ? 'text-purple-300 font-semibold'
                         : item.highlight
-                        ? 'text-cyan-300 hover:text-cyan-200 hover:bg-cyan-400/10'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                        ? 'text-cyan-300 hover:text-cyan-200'
+                        : 'text-slate-300 hover:text-white'
                     } ${
-                      item.highlight ? 'ring-1 ring-cyan-400/30' : ''
+                      item.highlight ? 'ring-1 ring-cyan-400/30 hover:ring-cyan-400/50' : ''
                     }`}
+                    onMouseEnter={(e) => {
+                      const indicator = document.getElementById('nav-indicator');
+                      if (indicator) {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const parentRect = e.currentTarget.parentElement!.getBoundingClientRect();
+                        indicator.style.width = `${rect.width}px`;
+                        indicator.style.left = `${rect.left - parentRect.left}px`;
+                        indicator.style.opacity = '1';
+                        indicator.style.transform = 'translateX(0px) scale(1.02)';
+                      }
+                    }}
+                    onMouseLeave={() => {
+                      const indicator = document.getElementById('nav-indicator');
+                      if (indicator && !isActive(item.href)) {
+                        indicator.style.opacity = '0';
+                        indicator.style.transform = 'translateX(0px) scale(0.98)';
+                      }
+                    }}
                   >
-                    {item.name}
+                    <span className="relative z-10 transition-all duration-200 group-hover:scale-105">
+                      {item.name}
+                    </span>
                     {active && (
-                      <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full" />
+                      <div className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full animate-fade-in" />
                     )}
+                    {/* Magnetic hover glow */}
+                    <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-400/10 to-cyan-400/10 opacity-0 group-hover:opacity-100 transition-all duration-300 animate-glow-pulse" />
                   </Link>
                 );
               })}
@@ -158,50 +192,67 @@ export function Navigation({ variant = 'default' }: NavigationProps) {
         </div>
 
         
-        {/* Mobile Navigation Menu */}
+        {/* Enhanced Mobile Navigation Menu with Staggered Animations */}
         <div 
           id="mobile-menu"
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-            isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          className={`md:hidden overflow-hidden transition-all duration-500 ease-out ${
+            isOpen ? 'max-h-[32rem] opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
-          <div className="px-2 py-4 space-y-2 bg-slate-800/90 backdrop-blur-md rounded-xl mt-4 border border-slate-700/50 shadow-xl">
-            {navItems.map((item) => {
-              const active = isActive(item.href);
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`flex items-center px-4 py-3 rounded-lg text-base font-medium transition-all ${
-                    active
-                      ? 'text-purple-400 bg-purple-400/15 border border-purple-400/20'
-                      : item.highlight
-                      ? 'text-cyan-300 hover:text-cyan-200 hover:bg-cyan-400/10 border border-cyan-400/20'
-                      : 'text-slate-300 hover:text-white hover:bg-slate-700/60 border border-transparent'
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <span className="flex-1">{item.name}</span>
-                  {active && (
-                    <div className="w-2 h-2 bg-purple-400 rounded-full" />
-                  )}
-                </Link>
-              );
-            })}
+          <div className="px-2 py-4 bg-slate-800/95 backdrop-blur-xl rounded-xl mt-4 border border-slate-700/50 shadow-2xl relative overflow-hidden">
+            {/* Mobile menu background effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-cyan-500/5 pointer-events-none" />
             
-            {/* Mobile CTA */}
-            <div className="pt-4 border-t border-slate-700/50">
+            <div className="space-y-2 relative z-10">
+              {navItems.map((item, index) => {
+                const active = isActive(item.href);
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`flex items-center px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 group border ${
+                      active
+                        ? 'text-purple-400 bg-purple-400/15 border-purple-400/30 shadow-lg shadow-purple-400/20'
+                        : item.highlight
+                        ? 'text-cyan-300 hover:text-cyan-200 hover:bg-cyan-400/10 border-cyan-400/20 hover:border-cyan-400/40'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/60 border-transparent hover:border-slate-600/50'
+                    } ${
+                      isOpen ? 'animate-slide-in-right' : ''
+                    }`}
+                    style={{
+                      animationDelay: `${index * 50}ms`
+                    }}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span className="flex-1 group-hover:scale-105 transition-transform duration-200">{item.name}</span>
+                    {active && (
+                      <div className="w-2 h-2 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full animate-pulse" />
+                    )}
+                    {item.highlight && !active && (
+                      <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+            
+            {/* Enhanced Mobile CTA */}
+            <div className={`pt-4 mt-4 border-t border-slate-700/50 relative z-10 ${
+              isOpen ? 'animate-fade-in-up' : ''
+            }`} style={{ animationDelay: `${navItems.length * 50 + 100}ms` }}>
               <Button
                 variant="primary"
                 size="md"
                 fullWidth
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg"
+                className="bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 hover:from-purple-700 hover:via-purple-800 hover:to-pink-700 shadow-xl hover:shadow-purple-500/25 transition-all transform hover:scale-105 font-semibold"
                 onClick={() => {
                   setIsOpen(false);
                   window.location.href = '/projects/0';
                 }}
               >
+                <span className="mr-2">🚀</span>
                 Join Presale
+                <span className="ml-2 text-xs opacity-75">Limited Time</span>
               </Button>
             </div>
           </div>
