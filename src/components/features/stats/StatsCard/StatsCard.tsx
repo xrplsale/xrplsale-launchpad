@@ -96,7 +96,11 @@ export function StatsCard({
                 <AnimatedCounter
                   value={value}
                   className="text-2xl font-bold text-white"
-                  formatNumber={formatter ? formatters[formatter] : undefined}
+                  formatNumber={formatter ? (
+                    formatter === 'decimal' 
+                      ? formatters[formatter](decimals)
+                      : formatters[formatter]
+                  ) : undefined}
                   decimals={decimals}
                   prefix={prefix}
                   suffix={suffix}
@@ -185,7 +189,11 @@ export function StatsCard({
                 <AnimatedCounter
                   value={value}
                   className="text-3xl font-bold text-white"
-                  formatNumber={formatter ? formatters[formatter] : undefined}
+                  formatNumber={formatter ? (
+                    formatter === 'decimal' 
+                      ? formatters[formatter](decimals)
+                      : formatters[formatter]
+                  ) : undefined}
                   decimals={decimals}
                   prefix={prefix}
                   suffix={suffix}

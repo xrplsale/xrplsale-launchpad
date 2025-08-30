@@ -133,8 +133,8 @@ export const formatters = {
     return value.toFixed(0);
   },
   
-  decimal: (decimals: number = 2) => (value: number) => {
-    return value.toFixed(decimals);
+  decimal: (decimals: number = 2) => {
+    return (value: number) => value.toFixed(decimals);
   },
   
   xrp: (value: number) => {

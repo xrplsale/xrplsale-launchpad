@@ -50,7 +50,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
   // Fetch blog data and categories with error detection
   let isUsingMockData = false;
-  let apiError = null;
+  let apiError: string | null = null;
 
   // Check if we're configured to use Flask backend
   const useFlaskBackend = process.env.USE_FLASK_BACKEND === 'true';
