@@ -23,8 +23,12 @@ function SearchButton({ term }: { term: string }) {
 }
 
 // Enhanced Presale card component with better UX
-function PresaleCard({ presale }: { presale: any }) {
-  const progress = (presale.tier_progress || 0);
+function PresaleCard({ presale }: { presale: LandingContent['presale'] }) {
+  if (!presale) {
+    return <div className="glass-card rounded-2xl p-6 border-brand-primary/20">Loading presale data...</div>;
+  }
+  
+  const progress = presale.tier_progress || 0;
   const daysLeft = Math.floor((presale.sale_end_timestamp * 1000 - Date.now()) / (1000 * 60 * 60 * 24));
   
   return (
@@ -111,7 +115,7 @@ function PresaleCard({ presale }: { presale: any }) {
           depth3D
           glow
           className="group/btn text-center"
-          onClick={() => window.location.href = presale.project_url || '/projects/0'}
+          onClick={() => window.location.href = '/projects/0'}
           aria-label="Purchase XSALE tokens in the presale"
         >
           <span className="flex items-center justify-center gap-2">
@@ -127,7 +131,7 @@ function PresaleCard({ presale }: { presale: any }) {
 }
 
 // Enhanced Stats section with better visual impact
-function StatsSection({ stats }: { stats: any }) {
+function StatsSection({ stats }: { stats: { total_projects?: number; active_presales?: number; total_raised?: number; success_rate?: number } }) {
   const statsData = [
     {
       value: stats.total_projects,
@@ -137,22 +141,22 @@ function StatsSection({ stats }: { stats: any }) {
       bg: "bg-purple-500/10"
     },
     {
-      value: stats.active_projects,
+      value: stats.active_presales,
       label: "Active Projects",
       icon: "🚀",
       color: "text-emerald-400",
       bg: "bg-emerald-500/10"
     },
     {
-      value: stats.total_users,
-      label: "Total Users",
+      value: stats.total_raised,
+      label: "Total Raised",
       icon: "👥",
       color: "text-cyan-400",
       bg: "bg-cyan-500/10"
     },
     {
-      value: `${(stats.total_raised_xrp / 1000).toFixed(1)}K`,
-      label: "XRP Raised",
+      value: `${((stats.success_rate || 0) * 100).toFixed(1)}%`,
+      label: "Success Rate",
       icon: "💎",
       color: "text-pink-400",
       bg: "bg-pink-500/10"
@@ -300,7 +304,9 @@ export function FlaskHomepageClient({
         
         {/* Unified brand gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/10 via-transparent to-brand-accent/5" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_70%,_rgba(255,0,122,0.08),_transparent_50%)] bg-[radial-gradient(circle_at_70%_30%,_rgba(244,114,182,0.06),_transparent_50%)]" />
+        <div className="absolute inset-0" style={{
+          background: `radial-gradient(circle at 30% 70%, rgba(255,0,122,0.08), transparent 50%), radial-gradient(circle at 70% 30%, rgba(244,114,182,0.06), transparent 50%)`
+        }} />
         
         <ParallaxScroll speed={0.3} className="relative container-main section-y">
           <ScrollReveal direction="up" delay={200}>
