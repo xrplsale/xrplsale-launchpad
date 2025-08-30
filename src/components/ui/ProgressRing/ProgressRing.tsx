@@ -213,7 +213,7 @@ export function ProgressRingCompact({
 }
 
 // Linear progress bar variant
-export function ProgressBar({
+export function LinearProgressBar({
   progress,
   height = 8,
   className,
