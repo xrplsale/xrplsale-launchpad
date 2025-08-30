@@ -83,6 +83,7 @@ next-env.d.ts
 # Documentation 
 !*.md
 !**/*.md
+CLAUDE.md
 
 # Development tools and configs
 *.py
@@ -96,3 +97,51 @@ vercel-log-drain.json
 .cache/
 temp/
 tmp/
+
+# Security and sensitive data (NEVER commit these!)
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+secrets.json
+secrets.txt
+private-key*
+api-key*
+*.secret
+.secrets/
+credentials/
+config/secrets*
+auth-config*
+
+# Personal and private files
+personal-notes*
+private*
+TODO-private*
+my-*
+local-*
+dev-notes*
+
+# Database files that might contain sensitive data
+*.db
+*.sqlite
+*.sqlite3
+data/
+
+# Backup files that might expose sensitive info
+*.backup
+*.bak
+*~
+.backup/
+backups/
+
+# Git patches and diffs that might expose sensitive code
+*.patch
+*.diff
+
+# Development artifacts
+.env.local.backup
+.env.production.backup
+debug/
+debug-output/

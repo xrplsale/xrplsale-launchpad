@@ -52,6 +52,14 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   let isUsingMockData = false;
   let apiError = null;
 
+  // Check if we're configured to use Flask backend
+  const useFlaskBackend = process.env.USE_FLASK_BACKEND === 'true';
+  
+  // If not using Flask backend, we're using mock data (this is normal in production)
+  if (!useFlaskBackend) {
+    isUsingMockData = true;
+  }
+
   const [articlesData, categories] = await Promise.all([
     getBlogArticles({
       page,
@@ -60,23 +68,16 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
       search,
       featured: featuredOnly
     }).catch((error) => {
-      isUsingMockData = true;
       apiError = error?.message || 'Failed to connect to API';
       return null;
     }),
     getBlogCategories().catch((error) => {
-      if (!isUsingMockData) {
-        isUsingMockData = true;
+      if (!apiError) {
         apiError = error?.message || 'Failed to connect to API';
       }
       return [];
     })
   ]);
-
-  // If we got data back but it's clearly mock data, flag it
-  if (articlesData?.articles?.length === 2 && articlesData.articles[0]?.slug === 'understanding-xrpl-dex-trading') {
-    isUsingMockData = true;
-  }
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
@@ -92,6 +93,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           <div className="lg:col-span-3">
             <BlogStatusBanner 
               isUsingMockData={isUsingMockData}
+              hasApiError={!!apiError}
             />
             <Suspense fallback={<BlogLoadingState />}>
               <BlogList 

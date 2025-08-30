@@ -497,8 +497,9 @@ class APIClient {
       
       const queryString = searchParams.toString();
       
-      // Use Next.js mock API during development/testing
-      if (process.env.NODE_ENV === 'development' || !this.baseURL.includes('://127.0.0.1:5000')) {
+      // Use Next.js mock API when Flask backend is unavailable or in production
+      const useFlaskBackend = process.env.USE_FLASK_BACKEND === 'true' && this.baseURL.includes('127.0.0.1:5000');
+      if (!useFlaskBackend) {
         const mockEndpoint = queryString ? `/api/mock/blog/articles?${queryString}` : '/api/mock/blog/articles';
         return this.requestNextJS<any>(mockEndpoint);
       }
@@ -513,14 +514,10 @@ class APIClient {
 
   async getBlogArticle(slug: string): Promise<any> {
     try {
-      // Prefer internal Next.js mock API on Vercel or when not explicitly targeting local Flask
-      const preferMock = !!process.env.VERCEL || process.env.NODE_ENV !== 'development' || !this.baseURL.includes('127.0.0.1:5000');
-      if (preferMock) {
-        try {
-          return await this.requestNextJS<any>(`/api/mock/blog/articles/${slug}`, { cache: 'no-store' });
-        } catch {
-          // Fallback to backend if internal mock route fails
-        }
+      // Use Flask backend only when explicitly enabled and available
+      const useFlaskBackend = process.env.USE_FLASK_BACKEND === 'true' && this.baseURL.includes('127.0.0.1:5000');
+      if (!useFlaskBackend) {
+        return await this.requestNextJS<any>(`/api/mock/blog/articles/${slug}`, { cache: 'no-store' });
       }
 
       return await this.request<any>(`/api/v1/blog/articles/${slug}`);
@@ -534,8 +531,9 @@ class APIClient {
 
   async getBlogCategories(): Promise<any> {
     try {
-      // Use Next.js mock API during development/testing
-      if (process.env.NODE_ENV === 'development' || !this.baseURL.includes('://127.0.0.1:5000')) {
+      // Use Flask backend only when explicitly enabled and available
+      const useFlaskBackend = process.env.USE_FLASK_BACKEND === 'true' && this.baseURL.includes('127.0.0.1:5000');
+      if (!useFlaskBackend) {
         return this.requestNextJS<any>('/api/mock/blog/categories');
       }
       
@@ -830,8 +828,9 @@ Get early access to promising blockchain projects before they hit major exchange
       
       const queryString = searchParams.toString();
       
-      // Use Next.js mock API during development/testing
-      if (process.env.NODE_ENV === 'development' || !this.baseURL.includes('://127.0.0.1:5000')) {
+      // Use Flask backend only when explicitly enabled and available
+      const useFlaskBackend = process.env.USE_FLASK_BACKEND === 'true' && this.baseURL.includes('127.0.0.1:5000');
+      if (!useFlaskBackend) {
         const mockEndpoint = queryString ? `/api/mock/changelog?${queryString}` : '/api/mock/changelog';
         return this.requestNextJS<any>(mockEndpoint);
       }
@@ -845,8 +844,9 @@ Get early access to promising blockchain projects before they hit major exchange
 
   async getChangelogEntry(version: string): Promise<any> {
     try {
-      // Use Next.js mock API during development/testing
-      if (process.env.NODE_ENV === 'development' || !this.baseURL.includes('://127.0.0.1:5000')) {
+      // Use Flask backend only when explicitly enabled and available
+      const useFlaskBackend = process.env.USE_FLASK_BACKEND === 'true' && this.baseURL.includes('127.0.0.1:5000');
+      if (!useFlaskBackend) {
         return this.requestNextJS<any>(`/api/mock/changelog/${version}`);
       }
       
