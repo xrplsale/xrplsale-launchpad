@@ -1,25 +1,24 @@
 'use client';
 
 import { Suspense, useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
 import PresaleInfo from '@/components/PresaleInfo';
 import { ScrollReveal, StaggeredReveal, ParallaxScroll, CounterAnimation } from '@/components/shared/ScrollReveal';
-import { StarField, CosmicDust } from '@/components/shared/ParticleSystem';
-import { CursorEffects, MagneticElement } from '@/components/shared/CursorEffects';
+// import { StarField, CosmicDust } from '@/components/shared/ParticleSystem';
+// import { CursorEffects, div } from '@/components/shared/CursorEffects';
 import { EnhancedButton } from '@/components/ui/Button/Button';
 import type { LandingContent, PresaleStatus } from '@/lib/api-simple';
 
 // Popular search button component
 function SearchButton({ term }: { term: string }) {
   return (
-    <MagneticElement strength={0.2}>
+    <div>
       <button 
-        className="btn-ghost text-sm whitespace-nowrap cursor-magnetic"
+        className="btn-ghost text-sm whitespace-nowrap"
         onClick={() => console.log(`Search for: ${term}`)}
       >
         {term}
       </button>
-    </MagneticElement>
+    </div>
   );
 }
 
@@ -167,7 +166,7 @@ function StatsSection({ stats }: { stats: any }) {
         className="grid grid-cols-2 lg:grid-cols-4 gap-6"
       >
         {statsData.map((stat, index) => (
-          <MagneticElement key={index} strength={0.15} scale={1.03}>
+          <div key={index}>
             <div className="glass-card rounded-xl p-6 text-center group border-slate-700/30 card-tilt">
               <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg ${stat.bg} mb-4 group-hover:scale-110 transition-transform float-gentle`}>
                 <span className="text-2xl" role="img" aria-hidden="true">
@@ -185,7 +184,7 @@ function StatsSection({ stats }: { stats: any }) {
                 {stat.label}
               </div>
             </div>
-          </MagneticElement>
+          </div>
         ))}
       </StaggeredReveal>
     </section>
@@ -205,12 +204,12 @@ function FAQSection({ faq }: { faq: Array<{ q: string; a: string }> }) {
           className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto"
         >
           {faq.map((item, index) => (
-            <MagneticElement key={index} strength={0.08}>
+            <div key={index}>
               <div className="glass-card rounded-lg p-6 border-slate-700/50 card-tilt">
                 <h3 className="text-lg font-semibold text-white mb-3">{item.q}</h3>
                 <p className="text-slate-300 text-sm leading-relaxed">{item.a}</p>
               </div>
-            </MagneticElement>
+            </div>
           ))}
         </StaggeredReveal>
       </div>
@@ -275,15 +274,15 @@ export function FlaskHomepageClient({
   return (
     <div className="min-h-screen bg-slate-900 text-white relative">
       {/* Premium Cursor Effects */}
-      <CursorEffects
+      {/* <CursorEffects
         showTrail
         showGlow
         showRipples
         color="#8b5cf6"
-      />
+      /> */}
       
       {/* Ambient Particle Effects */}
-      <StarField className="fixed inset-0 z-0" />
+      {/* <StarField className="fixed inset-0 z-0" /> */}
       
       {/* Accessibility: Skip to content link */}
       <a 
@@ -297,7 +296,7 @@ export function FlaskHomepageClient({
       {/* Enhanced Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         {/* Cosmic Dust Overlay */}
-        <CosmicDust className="absolute inset-0 opacity-30" />
+        {/* <CosmicDust className="absolute inset-0 opacity-30" /> */}
         
         {/* Unified brand gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/10 via-transparent to-brand-accent/5" />
@@ -360,7 +359,7 @@ export function FlaskHomepageClient({
             {/* Enhanced CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
               {content.hero.primaryCta && (
-                <MagneticElement strength={0.3} scale={1.05}>
+                <div>
                   <EnhancedButton
                     variant="primary"
                     size="xl"
@@ -377,10 +376,10 @@ export function FlaskHomepageClient({
                       </svg>
                     </span>
                   </EnhancedButton>
-                </MagneticElement>
+                </div>
               )}
               {content.hero.secondaryCta && (
-                <MagneticElement strength={0.2}>
+                <div>
                   <EnhancedButton
                     variant="secondary"
                     size="xl"
@@ -390,7 +389,7 @@ export function FlaskHomepageClient({
                   >
                     {content.hero.secondaryCta.label}
                   </EnhancedButton>
-                </MagneticElement>
+                </div>
               )}
             </div>
             </div>
@@ -411,7 +410,7 @@ export function FlaskHomepageClient({
           <section className="section-y bg-gradient-to-br from-slate-800/20 via-brand-primary/5 to-slate-800/20 rounded-3xl border border-brand-primary/20 relative overflow-hidden">
             {/* Gentle floating particles for presale section */}
             <div className="absolute inset-0 opacity-20">
-              <CosmicDust particleCount={15} />
+              {/* <CosmicDust particleCount={15} /> */}
             </div>
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-brand-primary/10 border border-brand-primary/30 rounded-full px-6 py-3 mb-6">
@@ -481,7 +480,7 @@ export function FlaskHomepageClient({
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto"
             >
               {content.features.map((feature, i) => (
-                <MagneticElement key={i} strength={0.1} scale={1.02}>
+                <div key={i}>
                   <div 
                     className="glass-card p-8 rounded-2xl border-slate-700/30 group relative overflow-hidden card-tilt"
                     role="article"
@@ -511,10 +510,11 @@ export function FlaskHomepageClient({
                       </p>
                     </div>
                   </div>
-                </MagneticElement>
+                </div>
               ))}
             </StaggeredReveal>
           )}
+          </section>
         </ScrollReveal>
       </main>
 

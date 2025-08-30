@@ -11,7 +11,7 @@ interface UseIntersectionObserverOptions {
 
 export function useIntersectionObserver<T extends Element>(
   options: UseIntersectionObserverOptions = {}
-): [RefObject<T>, boolean] {
+): [RefObject<T | null>, boolean] {
   const {
     threshold = 0.1,
     rootMargin = '0px',
@@ -73,9 +73,9 @@ export function useIntersectionObserver<T extends Element>(
 export function useStaggeredIntersectionObserver<T extends Element>(
   count: number,
   options: UseIntersectionObserverOptions & { staggerDelay?: number } = {}
-): [RefObject<T>[], boolean[]] {
+): [RefObject<T | null>[], boolean[]] {
   const { staggerDelay = 100, ...observerOptions } = options;
-  const refs = useRef<RefObject<T>[]>(
+  const refs = useRef<RefObject<T | null>[]>(
     Array.from({ length: count }, () => ({ current: null }))
   );
   const [inViewStates, setInViewStates] = useState<boolean[]>(
