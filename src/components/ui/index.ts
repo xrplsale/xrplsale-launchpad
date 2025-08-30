@@ -8,3 +8,4 @@ export * from './LoadingSpinner';
 export * from './Skeleton';
 export * from './AnimatedCounter';
 export * from './ProgressRing';
+export * from './Toast';
