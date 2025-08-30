@@ -14,7 +14,7 @@ interface BlogArticlePageProps {
 // Generate metadata for SEO
 export async function generateMetadata({ params }: BlogArticlePageProps): Promise<Metadata> {
   try {
-  const { slug } = params;
+  const { slug } = await params;
     const article = await getBlogArticle(slug);
     
     if (!article) {
@@ -66,7 +66,7 @@ export const revalidate = 300; // 5 minutes
 export const dynamic = 'force-dynamic';
 
 export default async function BlogArticlePage({ params }: BlogArticlePageProps) {
-  const { slug } = params;
+  const { slug } = await params;
   const article = await getBlogArticle(slug).catch(() => null);
   
   if (!article) {

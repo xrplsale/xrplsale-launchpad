@@ -43,10 +43,11 @@ interface BlogPageProps {
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
-  const page = parseInt(searchParams.page || '1');
-  const category = searchParams.category;
-  const search = searchParams.search;
-  const featuredOnly = searchParams.featured === 'true';
+  const resolvedSearchParams = await searchParams;
+  const page = parseInt(resolvedSearchParams.page || '1');
+  const category = resolvedSearchParams.category;
+  const search = resolvedSearchParams.search;
+  const featuredOnly = resolvedSearchParams.featured === 'true';
 
   // Fetch blog data and categories with error detection
   let isUsingMockData = false;

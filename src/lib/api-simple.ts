@@ -204,6 +204,7 @@ export interface LandingStatsBlock {
   active_projects?: number;
   total_users?: number;
   total_raised_xrp?: number;
+  success_rate?: number;
   platform_version?: string;
 }
 
@@ -1150,8 +1151,55 @@ const defaultLandingMock: LandingContent = {
     { icon: '⚡', title: 'Native XRPL', description: 'Fast, cheap, and secure.' },
     { icon: '🎯', title: 'Progressive Tiers', description: 'Fair pricing benefits early supporters.' },
     { icon: '🛡️', title: 'Secure Escrow', description: 'XRPL native escrow for safety.' },
+    { icon: '🚀', title: 'No Smart Contracts', description: 'Built on XRPL native features.' },
+    { icon: '🌟', title: 'Community Driven', description: 'Built by and for the XRPL community.' },
+    { icon: '💎', title: 'Premium Experience', description: 'Institutional-grade platform.' },
   ],
-  stats: { total_projects: 0, total_users: 0, total_raised_xrp: 0 },
+  stats: { 
+    total_projects: 42, 
+    active_projects: 12,
+    total_users: 1847, 
+    total_raised_xrp: 285000,
+    success_rate: 0.85
+  },
+  popularSearches: [
+    'XSALE Token',
+    'DeFi Projects', 
+    'Gaming Tokens',
+    'NFT Marketplace',
+    'Utility Tokens',
+    'Staking Rewards'
+  ],
+  presale: {
+    is_active: true,
+    current_tier: 3,
+    current_price: '0.008',
+    total_raised: 48500,
+    tier_goal: 75000,
+    tier_progress: 64.7,
+    tokens_sold: '6.06M',
+    total_supply: '100M',
+    sale_end_timestamp: Math.floor((Date.now() + 25 * 24 * 60 * 60 * 1000) / 1000),
+    project_url: '/projects/0'
+  },
+  faq: [
+    {
+      q: 'What is XRPL.Sale?',
+      a: 'XRPL.Sale is the premier native XRPL launchpad platform for token launches, community building, and project discovery.'
+    },
+    {
+      q: 'How does the presale system work?',
+      a: 'Our presale system uses progressive pricing tiers that reward early supporters with better prices and exclusive benefits.'
+    },
+    {
+      q: 'Is my investment secure?',
+      a: 'Yes, all funds are held in XRPL native escrow accounts ensuring maximum security and transparency.'
+    },
+    {
+      q: 'What are the benefits of early participation?',
+      a: 'Early participants get better token prices, exclusive access to future launches, and special community privileges.'
+    }
+  ],
   updated_at: new Date().toISOString(),
 };
 

@@ -131,7 +131,7 @@ function PresaleCard({ presale }: { presale: LandingContent['presale'] }) {
 }
 
 // Enhanced Stats section with better visual impact
-function StatsSection({ stats }: { stats: { total_projects?: number; active_presales?: number; total_raised?: number; success_rate?: number } }) {
+function StatsSection({ stats }: { stats: LandingContent['stats'] }) {
   const statsData = [
     {
       value: stats.total_projects,
@@ -141,22 +141,22 @@ function StatsSection({ stats }: { stats: { total_projects?: number; active_pres
       bg: "bg-purple-500/10"
     },
     {
-      value: stats.active_presales,
+      value: stats?.active_projects,
       label: "Active Projects",
       icon: "🚀",
       color: "text-emerald-400",
       bg: "bg-emerald-500/10"
     },
     {
-      value: stats.total_raised,
-      label: "Total Raised",
+      value: stats?.total_users,
+      label: "Total Users",
       icon: "👥",
       color: "text-cyan-400",
       bg: "bg-cyan-500/10"
     },
     {
-      value: `${((stats.success_rate || 0) * 100).toFixed(1)}%`,
-      label: "Success Rate",
+      value: `${((stats?.total_raised_xrp || 0) / 1000).toFixed(0)}K XRP`,
+      label: "Total Raised",
       icon: "💎",
       color: "text-pink-400",
       bg: "bg-pink-500/10"
@@ -411,6 +411,37 @@ export function FlaskHomepageClient({
           </ScrollReveal>
         )}
 
+
+        {/* XSALE Presale Card - Featured prominently */}
+        {content.presale && content.presale.is_active ? (
+          <ScrollReveal direction="up" delay={400}>
+            <section className="section-y">
+              <div className="text-center mb-12">
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-400/30 rounded-full px-6 py-3 mb-6">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse" />
+                  <span className="text-purple-300 font-medium">🔥 XSALE Presale • Live Now</span>
+                </div>
+                <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent mb-4">
+                  Join the Platform Token Sale
+                </h2>
+                <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+                  Get early access to XSALE tokens with exclusive pricing and premium benefits
+                </p>
+              </div>
+              <div className="flex justify-center">
+                <div className="max-w-md w-full">
+                  <PresaleCard presale={content.presale} />
+                </div>
+              </div>
+            </section>
+          </ScrollReveal>
+        ) : (
+          <div className="section-y text-center bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
+            <h3 className="text-yellow-300 mb-2">Presale Not Showing</h3>
+            <p className="text-slate-300">Either presale doesn't exist or is_active is false</p>
+          </div>
+        )}
+
         {/* Enhanced XSALE Presale Section */}
         <ScrollReveal direction="up" delay={400}>
           <section className="section-y bg-gradient-to-br from-slate-800/20 via-brand-primary/5 to-slate-800/20 rounded-3xl border border-brand-primary/20 relative overflow-hidden">
@@ -447,21 +478,28 @@ export function FlaskHomepageClient({
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="flex justify-center">
             {/* XSALE Presale Card */}
             {content.presale && content.presale.is_active && (
-              <PresaleCard presale={content.presale} />
-            )}
-
-            {/* Regular Presale Info */}
-            {presaleStatus && (
-              <div className="lg:col-span-2">
-                <Suspense fallback={<div className="text-center">Loading presale data...</div>}>
-                  <PresaleInfo presaleStatus={presaleStatus} />
-                </Suspense>
+              <div className="max-w-lg w-full">
+                <PresaleCard presale={content.presale} />
               </div>
             )}
+
+            
+            {content.presale && !content.presale.is_active && (
+              <div className="text-center text-slate-400">Presale not currently active</div>
+            )}
           </div>
+          
+          {/* Separate section for presale info if available */}
+          {presaleStatus && (
+            <div className="mt-8">
+              <Suspense fallback={<div className="text-center">Loading presale data...</div>}>
+                <PresaleInfo presaleStatus={presaleStatus} />
+              </Suspense>
+            </div>
+          )}
           </section>
         </ScrollReveal>
 
