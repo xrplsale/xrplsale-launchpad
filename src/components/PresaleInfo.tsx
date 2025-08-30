@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { PresaleStatus } from '@/lib/api-simple';
+import { ProgressRing, AnimatedCounter, formatters } from '@/components/ui';
 
 interface PresaleInfoProps {
   presaleStatus: PresaleStatus;

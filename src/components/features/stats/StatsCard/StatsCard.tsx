@@ -1,9 +1,9 @@
-import { Card } from '@/components/ui';
+import { Card, AnimatedCounter, formatters } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 interface StatsCardProps {
   title: string;
-  value: string;
+  value: string | number;
   subtitle: string;
   icon: string;
   variant?: 'default' | 'highlighted' | 'minimal' | 'glass';
@@ -14,6 +14,11 @@ interface StatsCardProps {
   };
   className?: string;
   loading?: boolean;
+  animated?: boolean;
+  formatter?: 'currency' | 'percentage' | 'compact' | 'xrp' | 'decimal';
+  decimals?: number;
+  prefix?: string;
+  suffix?: string;
 }
 
 export function StatsCard({ 
@@ -24,6 +29,11 @@ export function StatsCard({
   variant = 'default',
   trend,
   loading = false,
+  animated = true,
+  formatter,
+  decimals = 0,
+  prefix = '',
+  suffix = '',
   className 
 }: StatsCardProps) {
   const getTrendIcon = () => {
@@ -82,7 +92,20 @@ export function StatsCard({
             </div>
             
             <div className="space-y-2">
-              <p className="text-2xl font-bold text-white">{value}</p>
+              {animated && typeof value === 'number' ? (
+                <AnimatedCounter
+                  value={value}
+                  className="text-2xl font-bold text-white"
+                  formatNumber={formatter ? formatters[formatter] : undefined}
+                  decimals={decimals}
+                  prefix={prefix}
+                  suffix={suffix}
+                  startOnView={true}
+                  duration={1500}
+                />
+              ) : (
+                <p className="text-2xl font-bold text-white">{value}</p>
+              )}
               <div className="flex items-center justify-between">
                 <p className="text-sm text-slate-400">{subtitle}</p>
                 {trend && (
@@ -112,7 +135,20 @@ export function StatsCard({
         ) : (
           <>
             <div className="text-3xl mb-2">{icon}</div>
-            <div className="text-2xl font-bold text-white mb-1">{value}</div>
+            {animated && typeof value === 'number' ? (
+              <AnimatedCounter
+                value={value}
+                className="text-2xl font-bold text-white mb-1"
+                formatNumber={formatter ? formatters[formatter] : undefined}
+                decimals={decimals}
+                prefix={prefix}
+                suffix={suffix}
+                startOnView={true}
+                duration={1500}
+              />
+            ) : (
+              <div className="text-2xl font-bold text-white mb-1">{value}</div>
+            )}
             <div className="text-sm text-slate-400">{title}</div>
             {trend && (
               <div className={cn('text-xs mt-1 flex items-center justify-center gap-1', getTrendColor())}>
@@ -145,7 +181,20 @@ export function StatsCard({
             </div>
             
             <div className="space-y-2">
-              <p className="text-3xl font-bold text-white">{value}</p>
+              {animated && typeof value === 'number' ? (
+                <AnimatedCounter
+                  value={value}
+                  className="text-3xl font-bold text-white"
+                  formatNumber={formatter ? formatters[formatter] : undefined}
+                  decimals={decimals}
+                  prefix={prefix}
+                  suffix={suffix}
+                  startOnView={true}
+                  duration={1500}
+                />
+              ) : (
+                <p className="text-3xl font-bold text-white">{value}</p>
+              )}
               <div className="flex items-center justify-between">
                 <p className="text-sm text-slate-300">{subtitle}</p>
                 {trend && (
@@ -179,7 +228,20 @@ export function StatsCard({
           </div>
           
           <div className="space-y-2">
-            <p className="text-2xl font-bold text-white">{value}</p>
+            {animated && typeof value === 'number' ? (
+              <AnimatedCounter
+                value={value}
+                className="text-2xl font-bold text-white"
+                formatNumber={formatter ? formatters[formatter] : undefined}
+                decimals={decimals}
+                prefix={prefix}
+                suffix={suffix}
+                startOnView={true}
+                duration={1500}
+              />
+            ) : (
+              <p className="text-2xl font-bold text-white">{value}</p>
+            )}
             <div className="flex items-center justify-between">
               <p className="text-sm text-slate-400">{subtitle}</p>
               {trend && (
