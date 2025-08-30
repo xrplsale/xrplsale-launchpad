@@ -36,6 +36,13 @@ export function StatsCard({
   suffix = '',
   className 
 }: StatsCardProps) {
+  const getFormatFunction = () => {
+    if (!formatter) return undefined;
+    if (formatter === 'decimal') {
+      return formatters.decimal(decimals);
+    }
+    return formatters[formatter];
+  };
   const getTrendIcon = () => {
     if (!trend) return null;
     
@@ -96,11 +103,7 @@ export function StatsCard({
                 <AnimatedCounter
                   value={value}
                   className="text-2xl font-bold text-white"
-                  formatNumber={formatter ? (
-                    formatter === 'decimal' 
-                      ? formatters[formatter](decimals)
-                      : formatters[formatter]
-                  ) : undefined}
+                  formatNumber={getFormatFunction()}
                   decimals={decimals}
                   prefix={prefix}
                   suffix={suffix}
@@ -143,7 +146,7 @@ export function StatsCard({
               <AnimatedCounter
                 value={value}
                 className="text-2xl font-bold text-white mb-1"
-                formatNumber={formatter ? formatters[formatter] : undefined}
+                formatNumber={getFormatFunction()}
                 decimals={decimals}
                 prefix={prefix}
                 suffix={suffix}
@@ -189,11 +192,7 @@ export function StatsCard({
                 <AnimatedCounter
                   value={value}
                   className="text-3xl font-bold text-white"
-                  formatNumber={formatter ? (
-                    formatter === 'decimal' 
-                      ? formatters[formatter](decimals)
-                      : formatters[formatter]
-                  ) : undefined}
+                  formatNumber={getFormatFunction()}
                   decimals={decimals}
                   prefix={prefix}
                   suffix={suffix}
@@ -240,7 +239,7 @@ export function StatsCard({
               <AnimatedCounter
                 value={value}
                 className="text-2xl font-bold text-white"
-                formatNumber={formatter ? formatters[formatter] : undefined}
+                formatNumber={getFormatFunction()}
                 decimals={decimals}
                 prefix={prefix}
                 suffix={suffix}
